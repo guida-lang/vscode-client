@@ -1,0 +1,748 @@
+{
+	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+	"name": "Guida",
+	"patterns": [
+		{
+			"include": "#import"
+		},
+		{
+			"include": "#module"
+		},
+		{
+			"include": "#debug"
+		},
+		{
+			"include": "#comments"
+		},
+		{
+			"match": "\\b(_)([a-z][a-zA-Z0-9_]*)?\\b",
+			"name": "keyword.unused.guida"
+		},
+		{
+			"include": "#type-signature"
+		},
+		{
+			"include": "#type-declaration"
+		},
+		{
+			"include": "#type-alias-declaration"
+		},
+		{
+			"include": "#string-triple"
+		},
+		{
+			"include": "#string-quote"
+		},
+		{
+			"include": "#char"
+		},
+		{
+			"comment": "Floats are always decimal",
+			"match": "\\b([0-9]+\\.[0-9]+([eE][+-]?[0-9]+)?|[0-9]+[eE][+-]?[0-9]+)\\b",
+			"name": "constant.numeric.float.guida"
+		},
+		{
+			"match": "\\b([0-9]+)\\b",
+			"name": "constant.numeric.guida"
+		},
+		{
+			"match": "\\b(0x[0-9a-fA-F]+)\\b",
+			"name": "constant.numeric.guida"
+		},
+		{
+			"include": "#glsl"
+		},
+		{
+			"include": "#record-prefix"
+		},
+		{
+			"include": "#module-prefix"
+		},
+		{
+			"include": "#constructor"
+		},
+		{
+			"name": "meta.record.field.update.guida",
+			"match": "(\\{)\\s+([a-z][a-zA-Z0-9_]*)\\s+(\\|)\\s+([a-z][a-zA-Z0-9_]*)",
+			"captures": {
+				"1": {
+					"name": "punctuation.bracket.guida"
+				},
+				"2": {
+					"name": "record.name.guida"
+				},
+				"3": {
+					"name": "keyword.pipe.guida"
+				},
+				"4": {
+					"name": "entity.name.record.field.guida"
+				}
+			}
+		},
+		{
+			"name": "meta.record.field.update.guida",
+			"match": "(\\|)\\s+([a-z][a-zA-Z0-9_]*)\\s+(\\=)",
+			"captures": {
+				"1": {
+					"name": "keyword.pipe.guida"
+				},
+				"2": {
+					"name": "entity.name.record.field.guida"
+				},
+				"3": {
+					"name": "keyword.operator.assignment.guida"
+				}
+			}
+		},
+		{
+			"name": "meta.record.field.update.guida",
+			"match": "(\\{)\\s+([a-z][a-zA-Z0-9_]*)\\s+$",
+			"captures": {
+				"1": {
+					"name": "punctuation.bracket.guida"
+				},
+				"2": {
+					"name": "record.name.guida"
+				}
+			}
+		},
+		{
+			"name": "meta.record.field.guida",
+			"match": "(\\{)\\s+([a-z][a-zA-Z0-9_]*)\\s+(\\=)",
+			"captures": {
+				"1": {
+					"name": "punctuation.bracket.guida"
+				},
+				"2": {
+					"name": "entity.name.record.field.guida"
+				},
+				"3": {
+					"name": "keyword.operator.assignment.guida"
+				}
+			}
+		},
+		{
+			"name": "meta.record.field.guida",
+			"match": "(,)\\s+([a-z][a-zA-Z0-9_]*)\\s+(\\=)",
+			"captures": {
+				"1": {
+					"name": "punctuation.separator.comma.guida"
+				},
+				"2": {
+					"name": "entity.name.record.field.guida"
+				},
+				"3": {
+					"name": "keyword.operator.assignment.guida"
+				}
+			}
+		},
+		{
+			"match": "(\\}|\\{)",
+			"name": "punctuation.bracket.guida"
+		},
+		{
+			"include": "#unit"
+		},
+		{
+			"include": "#comma"
+		},
+		{
+			"include": "#parens"
+		},
+		{
+			"match": "(->)",
+			"name": "keyword.operator.arrow.guida"
+		},
+		{
+			"include": "#infix_op"
+		},
+		{
+			"match": "(\\=|\\:|\\||\\\\)",
+			"name": "keyword.other.guida"
+		},
+		{
+			"match": "\\b(type|as|port|exposing|alias|infixl|infixr|infix)\\s+",
+			"name": "keyword.other.guida"
+		},
+		{
+			"match": "\\b(if|then|else|case|of|let|in)\\s+",
+			"name": "keyword.control.guida"
+		},
+		{
+			"include": "#record-accessor"
+		},
+		{
+			"include": "#top_level_value"
+		},
+		{
+			"include": "#value"
+		},
+		{
+			"include": "#period"
+		},
+		{
+			"include": "#square_brackets"
+		}
+	],
+	"repository": {
+		"comma": {
+			"match": "(,)",
+			"name": "punctuation.separator.comma.guida"
+		},
+		"parens": {
+			"match": "(\\(|\\))",
+			"name": "punctuation.parens.guida"
+		},
+		"block_comment": {
+			"applyEndPatternLast": 1,
+			"begin": "\\{-(?!#)",
+			"captures": {
+				"0": {
+					"name": "punctuation.definition.comment.guida"
+				}
+			},
+			"end": "-\\}",
+			"name": "comment.block.guida",
+			"patterns": [
+				{
+					"include": "#block_comment"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"captures": {
+						"1": {
+							"name": "punctuation.definition.comment.guida"
+						}
+					},
+					"begin": "--",
+					"end": "$",
+					"name": "comment.line.double-dash.guida"
+				},
+				{
+					"include": "#block_comment"
+				}
+			]
+		},
+		"import": {
+			"name": "meta.import.guida",
+			"begin": "^\\b(import)\\s+",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.control.import.guida"
+				}
+			},
+			"end": "\\n(?!\\s)",
+			"patterns": [
+				{
+					"match": "(as|exposing)",
+					"name": "keyword.control.guida"
+				},
+				{
+					"include": "#module_chunk"
+				},
+				{
+					"include": "#period"
+				},
+				{
+					"match": "\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"include": "#module-exports"
+				}
+			]
+		},
+		"module": {
+			"begin": "^\\b((port |effect )?module)\\s+",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.other.guida"
+				}
+			},
+			"end": "\\n(?!\\s)",
+			"endCaptures": {
+				"1": {
+					"name": "keyword.other.guida"
+				}
+			},
+			"name": "meta.declaration.module.guida",
+			"patterns": [
+				{
+					"include": "#module_chunk"
+				},
+				{
+					"include": "#period"
+				},
+				{
+					"match": "(exposing)",
+					"name": "keyword.other.guida"
+				},
+				{
+					"match": "\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"include": "#module-exports"
+				}
+			]
+		},
+		"string-triple": {
+			"name": "string.quoted.triple.guida",
+			"begin": "\"\"\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.guida"
+				}
+			},
+			"end": "\"\"\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.guida"
+				}
+			},
+			"patterns": [
+				{
+					"match": "\\\\(NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC1|DC2|DC3|DC4|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL|[abfnrtv\\\\\\\"'\\&]|x[0-9a-fA-F]{1,5})",
+					"name": "constant.character.escape.guida"
+				},
+				{
+					"match": "\\^[A-Z@\\[\\]\\\\\\^_]",
+					"name": "constant.character.escape.control.guida"
+				}
+			]
+		},
+		"string-quote": {
+			"name": "string.quoted.double.guida",
+			"begin": "\"",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.begin.guida"
+				}
+			},
+			"end": "\"",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.string.end.guida"
+				}
+			},
+			"patterns": [
+				{
+					"match": "\\\\(NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC1|DC2|DC3|DC4|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL|[abfnrtv\\\\\\\"'\\&]|x[0-9a-fA-F]{1,5})",
+					"name": "constant.character.escape.guida"
+				},
+				{
+					"match": "\\^[A-Z@\\[\\]\\\\\\^_]",
+					"name": "constant.character.escape.control.guida"
+				}
+			]
+		},
+		"char": {
+			"name": "string.quoted.single.guida",
+			"begin": "'",
+			"beginCaptures": {
+				"0": {
+					"name": "punctuation.definition.char.begin.guida"
+				}
+			},
+			"end": "'",
+			"endCaptures": {
+				"0": {
+					"name": "punctuation.definition.char.end.guida"
+				}
+			},
+			"patterns": [
+				{
+					"match": "\\\\(NUL|SOH|STX|ETX|EOT|ENQ|ACK|BEL|BS|HT|LF|VT|FF|CR|SO|SI|DLE|DC1|DC2|DC3|DC4|NAK|SYN|ETB|CAN|EM|SUB|ESC|FS|GS|RS|US|SP|DEL|[abfnrtv\\\\\\\"'\\&]|x[0-9a-fA-F]{1,5})",
+					"name": "constant.character.escape.guida"
+				},
+				{
+					"match": "\\^[A-Z@\\[\\]\\\\\\^_]",
+					"name": "constant.character.escape.control.guida"
+				}
+			]
+		},
+		"debug": {
+			"match": "\\b(Debug)\\b",
+			"name": "invalid.illegal.debug.guida"
+		},
+		"module-exports": {
+			"begin": "(\\()",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.parens.module-export.guida"
+				}
+			},
+			"end": "(\\))",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.parens.module-export.guida"
+				}
+			},
+			"name": "meta.declaration.exports.guida",
+			"patterns": [
+				{
+					"match": "\\b[a-z][a-zA-Z_'0-9]*",
+					"name": "entity.name.function.guida"
+				},
+				{
+					"match": "\\b[A-Z][A-Za-z_'0-9]*",
+					"name": "storage.type.guida"
+				},
+				{
+					"match": ",",
+					"name": "punctuation.separator.comma.guida"
+				},
+				{
+					"match": "\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"include": "#comma"
+				},
+				{
+					"match": "\\(\\.\\.\\)",
+					"name": "punctuation.parens.ellipses.guida"
+				},
+				{
+					"match": "\\.\\.",
+					"name": "punctuation.parens.ellipses.guida"
+				},
+				{
+					"include": "#infix_op"
+				},
+				{
+					"comment": "So named because I don't know what to call this.",
+					"match": "\\(.*?\\)",
+					"name": "meta.other.unknown.guida"
+				}
+			]
+		},
+		"module_chunk": {
+			"match": "[A-Z][a-zA-Z0-9_]*",
+			"name": "support.module.guida"
+		},
+		"period": {
+			"match": "[.]",
+			"name": "keyword.other.period.guida"
+		},
+		"square_brackets": {
+			"match": "[\\[\\]]",
+			"name": "punctuation.definition.list.guida"
+		},
+		"record-prefix": {
+			"match": "([a-z][a-zA-Z0-9_]*)(\\.)([a-z][a-zA-Z0-9_]*)",
+			"name": "record.accessor.guida",
+			"captures": {
+				"1": {
+					"name": "record.name.guida"
+				},
+				"2": {
+					"name": "keyword.other.period.guida"
+				},
+				"3": {
+					"name": "entity.name.record.field.accessor.guida"
+				}
+			}
+		},
+		"module-prefix": {
+			"match": "([A-Z][a-zA-Z0-9_]*)(\\.)",
+			"name": "meta.module.name.guida",
+			"captures": {
+				"1": {
+					"name": "support.module.guida"
+				},
+				"2": {
+					"name": "keyword.other.period.guida"
+				}
+			}
+		},
+		"constructor": {
+			"match": "\\b[A-Z][a-zA-Z0-9_]*\\b",
+			"name": "constant.type-constructor.guida"
+		},
+		"value": {
+			"match": "\\b[a-z][a-zA-Z0-9_]*\\b",
+			"name": "meta.value.guida"
+		},
+		"unit": {
+			"match": "\\(\\)",
+			"name": "constant.unit.guida"
+		},
+		"top_level_value": {
+			"match": "^[a-z][a-zA-Z0-9_]*\\b",
+			"name": "entity.name.function.top_level.guida"
+		},
+		"record-accessor": {
+			"match": "(\\.)([a-z][a-zA-Z0-9_]*)",
+			"name": "meta.record.accessor",
+			"captures": {
+				"1": {
+					"name": "keyword.other.period.guida"
+				},
+				"2": {
+					"name": "entity.name.record.field.accessor.guida"
+				}
+			}
+		},
+		"infix_op": {
+			"match": "(</>|<\\?>|<\\||<=|\\|\\||&&|>=|\\|>|\\|=|\\|\\.|\\+\\+|::|/=|==|//|>>|<<|<|>|\\^|\\+|-|/|\\*)",
+			"name": "keyword.operator.guida"
+		},
+		"type-declaration": {
+			"begin": "^(type\\s+)([A-Z][a-zA-Z0-9_']*)\\s+",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.type.guida"
+				},
+				"2": {
+					"name": "storage.type.guida"
+				}
+			},
+			"end": "^(?=\\S)",
+			"name": "meta.function.type-declaration.guida",
+			"patterns": [
+				{
+					"name": "meta.record.field.guida",
+					"match": "^\\s*([A-Z][a-zA-Z0-9_]*)\\b",
+					"captures": {
+						"1": {
+							"name": "constant.type-constructor.guida"
+						}
+					}
+				},
+				{
+					"match": "\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"name": "meta.record.field.guida",
+					"match": "(\\=|\\|)\\s+([A-Z][a-zA-Z0-9_]*)\\b",
+					"captures": {
+						"1": {
+							"name": "keyword.operator.assignment.guida"
+						},
+						"2": {
+							"name": "constant.type-constructor.guida"
+						}
+					}
+				},
+				{
+					"match": "\\=",
+					"name": "keyword.operator.assignment.guida"
+				},
+				{
+					"match": "\\-\\>",
+					"name": "keyword.operator.arrow.guida"
+				},
+				{
+					"include": "#module-prefix"
+				},
+				{
+					"match": "\\b[a-z][a-zA-Z0-9_]*\\b",
+					"name": "variable.type.guida"
+				},
+				{
+					"match": "\\b[A-Z][a-zA-Z0-9_]*\\b",
+					"name": "storage.type.guida"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#type-record"
+				}
+			]
+		},
+		"type-alias-declaration": {
+			"begin": "^(type\\s+)(alias\\s+)([A-Z][a-zA-Z0-9_']*)\\s+",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.type.guida"
+				},
+				"2": {
+					"name": "keyword.type-alias.guida"
+				},
+				"3": {
+					"name": "storage.type.guida"
+				}
+			},
+			"end": "^(?=\\S)",
+			"name": "meta.function.type-declaration.guida",
+			"patterns": [
+				{
+					"match": "\\n\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"match": "\\=",
+					"name": "keyword.operator.assignment.guida"
+				},
+				{
+					"include": "#module-prefix"
+				},
+				{
+					"match": "\\b[A-Z][a-zA-Z0-9_]*\\b",
+					"name": "storage.type.guida"
+				},
+				{
+					"match": "\\b[a-z][a-zA-Z0-9_]*\\b",
+					"name": "variable.type.guida"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#type-record"
+				}
+			]
+		},
+		"type-record": {
+			"begin": "(\\{)",
+			"beginCaptures": {
+				"1": {
+					"name": "punctuation.section.braces.begin"
+				}
+			},
+			"end": "(\\})",
+			"endCaptures": {
+				"1": {
+					"name": "punctuation.section.braces.end"
+				}
+			},
+			"name": "meta.function.type-record.guida",
+			"patterns": [
+				{
+					"match": "\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"match": "->",
+					"name": "keyword.operator.arrow.guida"
+				},
+				{
+					"name": "meta.record.field.guida",
+					"match": "([a-z][a-zA-Z0-9_]*)\\s+(\\:)",
+					"captures": {
+						"1": {
+							"name": "entity.name.record.field.guida"
+						},
+						"2": {
+							"name": "keyword.other.guida"
+						}
+					}
+				},
+				{
+					"match": "\\,",
+					"name": "punctuation.separator.comma.guida"
+				},
+				{
+					"include": "#module-prefix"
+				},
+				{
+					"match": "\\b[a-z][a-zA-Z0-9_]*\\b",
+					"name": "variable.type.guida"
+				},
+				{
+					"match": "\\b[A-Z][a-zA-Z0-9_]*\\b",
+					"name": "storage.type.guida"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#type-record"
+				}
+			]
+		},
+		"type-signature": {
+			"begin": "^(port\\s+)?([a-z_][a-zA-Z0-9_']*)\\s+(\\:)",
+			"beginCaptures": {
+				"1": {
+					"name": "keyword.other.port.guida"
+				},
+				"2": {
+					"name": "entity.name.function.guida"
+				},
+				"3": {
+					"name": "keyword.other.colon.guida"
+				}
+			},
+			"end": "((^(?=[a-z]))|^$)",
+			"name": "meta.function.type-declaration.guida",
+			"patterns": [
+				{
+					"include": "#type-signature-chunk"
+				}
+			]
+		},
+		"type-signature-chunk": {
+			"patterns": [
+				{
+					"match": "->",
+					"name": "keyword.operator.arrow.guida"
+				},
+				{
+					"match": "\\s+",
+					"name": "punctuation.spaces.guida"
+				},
+				{
+					"include": "#module-prefix"
+				},
+				{
+					"match": "\\b[a-z][a-zA-Z0-9_]*\\b",
+					"name": "variable.type.guida"
+				},
+				{
+					"match": "\\b[A-Z][a-zA-Z0-9_]*\\b",
+					"name": "storage.type.guida"
+				},
+				{
+					"match": "\\(\\)",
+					"name": "constant.unit.guida"
+				},
+				{
+					"include": "#comma"
+				},
+				{
+					"include": "#parens"
+				},
+				{
+					"include": "#comments"
+				},
+				{
+					"include": "#type-record"
+				}
+			]
+		},
+		"glsl": {
+			"begin": "(\\[)(glsl)(\\|)",
+			"beginCaptures": {
+				"1": {
+					"name": "entity.glsl.bracket.guida"
+				},
+				"2": {
+					"name": "entity.glsl.name.guida"
+				},
+				"3": {
+					"name": "entity.glsl.bracket.guida"
+				}
+			},
+			"end": "(\\|\\])",
+			"endCaptures": {
+				"1": {
+					"name": "entity.glsl.bracket.guida"
+				}
+			},
+			"name": "meta.embedded.block.glsl",
+			"patterns": [
+				{
+					"include": "source.glsl"
+				}
+			]
+		}
+	},
+	"scopeName": "source.guida"
+}

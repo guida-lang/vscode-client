@@ -1,0 +1,41 @@
+{
+  "name": "guida",
+  "displayName": "Guida",
+  "description": "Guida Language Extension for VS Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Snippets"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "guida",
+        "aliases": [
+          "Guida",
+          "guida"
+        ],
+        "extensions": [
+          ".guida"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "guida",
+        "scopeName": "source.guida",
+        "path": "./syntaxes/guida.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "guida",
+        "path": "./snippets.json"
+      }
+    ]
+  }
+}

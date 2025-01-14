@@ -1,0 +1,16 @@
+{
+	"guida module": {
+		"isFileTemplate": true,
+		"body": [
+			"module ${1:Name} exposing (${2:..})"
+		],
+		"description": "Guida Module"
+	},
+	"Module": {
+		"prefix": "module",
+		"body": [
+			"module ${1:Name} exposing (${2:..})"
+		],
+		"description": "Module definition"
+	}
+}
