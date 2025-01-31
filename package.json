@@ -3,6 +3,10 @@
   "displayName": "Guida",
   "description": "Guida Language Extension for VS Code",
   "version": "0.0.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/guida-lang/vscode-client"
+  },
   "engines": {
     "vscode": "^1.96.0"
   },
@@ -10,6 +14,7 @@
     "Programming Languages",
     "Snippets"
   ],
+  "icon": "images/icon.png",
   "contributes": {
     "languages": [
       {
@@ -21,7 +26,11 @@
         "extensions": [
           ".guida"
         ],
-        "configuration": "./language-configuration.json"
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./images/file-type-light.svg",
+          "dark": "./images/file-type-dark.svg"
+        }
       }
     ],
     "grammars": [
