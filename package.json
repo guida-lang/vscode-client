@@ -91,6 +91,6 @@
     "typescript-eslint": "^8.32.1"
   },
   "dependencies": {
-    "guida": "file:../compiler"
+    "guida": "github:guida-lang/compiler#856ede57e8637213238c2791925f857699fceb5e"
   }
 }
