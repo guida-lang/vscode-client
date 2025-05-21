@@ -19,6 +19,8 @@ import {
     TextDocument
 } from 'vscode-languageserver-textdocument';
 
+import * as guida from "guida";
+
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
 const connection = createConnection(ProposedFeatures.all);
@@ -57,9 +59,11 @@ connection.onInitialize((params: InitializeParams) => {
             diagnosticProvider: {
                 interFileDependencies: false,
                 workspaceDiagnostics: false
-            }
+            },
+            documentFormattingProvider: true
         }
     };
+
     if (hasWorkspaceFolderCapability) {
         result.capabilities.workspace = {
             workspaceFolders: {
@@ -67,6 +71,7 @@ connection.onInitialize((params: InitializeParams) => {
             }
         };
     }
+
     return result;
 });
 
@@ -238,6 +243,34 @@ connection.onCompletionResolve(
         return item;
     }
 );
+
+connection.onDocumentFormatting(async (params) => {
+    const { textDocument } = params;
+
+    // Get document text from document manager
+    const document = documents.get(textDocument.uri);
+
+    if (!document) {
+        return;
+    }
+
+    const text = document.getText();
+
+    const app = await guida.init();
+    const result = await app.format(text);
+
+    if (result.output) {
+        return [
+            {
+                range: {
+                    start: { line: 0, character: 0 },
+                    end: { line: document.lineCount, character: 0 },
+                },
+                newText: result.output,
+            }
+        ];
+    }
+});
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events
