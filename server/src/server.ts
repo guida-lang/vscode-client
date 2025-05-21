@@ -82,19 +82,17 @@ connection.onInitialized(() => {
     }
 });
 
-// The example settings
-interface ExampleSettings {
+// The guida settings
+interface GuidaSettings {
     maxNumberOfProblems: number;
 }
 
 // The global settings, used when the `workspace/configuration` request is not supported by the client.
-// Please note that this is not the case when using this server with the client provided in this example
-// but could happen with other clients.
-const defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
-let globalSettings: ExampleSettings = defaultSettings;
+const defaultSettings: GuidaSettings = { maxNumberOfProblems: 1000 };
+let globalSettings: GuidaSettings = defaultSettings;
 
 // Cache the settings of all open documents
-const documentSettings = new Map<string, Thenable<ExampleSettings>>();
+const documentSettings = new Map<string, Thenable<GuidaSettings>>();
 
 connection.onDidChangeConfiguration(change => {
     if (hasConfigurationCapability) {
@@ -102,7 +100,7 @@ connection.onDidChangeConfiguration(change => {
         documentSettings.clear();
     } else {
         globalSettings = (
-            (change.settings.languageServerExample || defaultSettings)
+            (change.settings.guidaLanguageServer || defaultSettings)
         );
     }
     // Refresh the diagnostics since the `maxNumberOfProblems` could have changed.
@@ -111,7 +109,7 @@ connection.onDidChangeConfiguration(change => {
     connection.languages.diagnostics.refresh();
 });
 
-function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
+function getDocumentSettings(resource: string): Thenable<GuidaSettings> {
     if (!hasConfigurationCapability) {
         return Promise.resolve(globalSettings);
     }
@@ -119,7 +117,7 @@ function getDocumentSettings(resource: string): Thenable<ExampleSettings> {
     if (!result) {
         result = connection.workspace.getConfiguration({
             scopeUri: resource,
-            section: 'languageServerExample'
+            section: 'guidaLanguageServer'
         });
         documentSettings.set(resource, result);
     }

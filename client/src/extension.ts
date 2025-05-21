@@ -29,17 +29,20 @@ export function activate(context: ExtensionContext) {
     // Options to control the language client
     const clientOptions: LanguageClientOptions = {
         // Register the server for plain text documents
-        documentSelector: [{ scheme: 'file', language: 'plaintext' }],
+        documentSelector: [
+            { scheme: 'file', language: 'guida' },
+            { scheme: 'untitled', language: 'guida' }
+        ],
         synchronize: {
             // Notify the server about file changes to '.clientrc files contained in the workspace
-            fileEvents: workspace.createFileSystemWatcher('**/.clientrc')
+            fileEvents: workspace.createFileSystemWatcher('**/*.guida')
         }
     };
 
     // Create the language client and start the client.
     client = new LanguageClient(
-        'languageServerExample',
-        'Language Server Example',
+        'guidaLanguageServer',
+        'Guida',
         serverOptions,
         clientOptions
     );
