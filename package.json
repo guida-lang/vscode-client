@@ -11,9 +11,11 @@
   "engines": {
     "vscode": "^1.96.0"
   },
+  "activationEvents": [],
   "categories": [
     "Programming Languages",
-    "Snippets"
+    "Snippets",
+    "Formatters"
   ],
   "icon": "images/icon.png",
   "main": "./client/out/extension",
@@ -91,6 +93,6 @@
     "typescript-eslint": "^8.32.1"
   },
   "dependencies": {
-    "guida": "github:guida-lang/compiler#856ede57e8637213238c2791925f857699fceb5e"
+    "guida": "github:guida-lang/compiler#0cf1644b0d7aa7ad17cf000bec4586a6a781eab7"
   }
 }

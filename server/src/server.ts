@@ -269,6 +269,8 @@ connection.onDocumentFormatting(async (params) => {
                 newText: result.output,
             }
         ];
+    } else {
+        throw new Error("Formatting failed: " + result.error);
     }
 });
 
