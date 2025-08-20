@@ -1,20 +1,24 @@
 {
-  "name": "guida",
+  "name": "vscode-client",
   "displayName": "Guida",
   "description": "Guida Language Extension for VS Code",
-  "version": "0.0.1",
+  "version": "0.0.1-alpha",
   "repository": {
     "type": "git",
     "url": "https://github.com/guida-lang/vscode-client"
   },
+  "publisher": "guida-lang",
   "engines": {
     "vscode": "^1.96.0"
   },
+  "activationEvents": [],
   "categories": [
     "Programming Languages",
-    "Snippets"
+    "Snippets",
+    "Formatters"
   ],
   "icon": "images/icon.png",
+  "main": "./client/out/extension",
   "contributes": {
     "languages": [
       {
@@ -45,6 +49,57 @@
         "language": "guida",
         "path": "./snippets.json"
       }
-    ]
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "Guida",
+      "properties": {
+        "guidaLanguageServer.maxNumberOfProblems": {
+          "scope": "resource",
+          "type": "number",
+          "default": 100,
+          "description": "Controls the maximum number of problems produced by the server."
+        },
+        "guidaLanguageServer.trace.server": {
+          "scope": "window",
+          "type": "string",
+          "enum": [
+            "off",
+            "messages",
+            "verbose"
+          ],
+          "default": "off",
+          "description": "Traces the communication between VS Code and the language server."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "npm run check-types && npm run lint && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch --project tsconfig.json",
+    "package": "npm run check-types && npm run lint && node esbuild.js --production",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint",
+    "postinstall": "cd client && npm install && cd ../server && npm install && cd ..",
+    "pretest": "tsc -b",
+    "test": "sh ./scripts/e2e.sh"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@stylistic/eslint-plugin": "^4.2.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.15.19",
+    "esbuild": "^0.25.9",
+    "eslint": "^9.27.0",
+    "mocha": "^11.4.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.32.1"
+  },
+  "dependencies": {
+    "guida": "github:guida-lang/compiler#0cf1644b0d7aa7ad17cf000bec4586a6a781eab7"
   }
 }

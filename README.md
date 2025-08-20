@@ -11,9 +11,9 @@ This is the official VSCode extension for the [Guida](https://guida-lang.org/) p
 
 ## Release Notes
 
-### 1.0.0
+### 0.0.1-alpha
 
-- Initial release with syntax highlighting and code snippets.
+- Initial alpha release with syntax highlighting, code snippets and document formatting.
 
 ---
 
