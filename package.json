@@ -2,7 +2,7 @@
   "name": "vscode-client",
   "displayName": "Guida",
   "description": "Guida Language Extension for VS Code",
-  "version": "0.0.1-alpha",
+  "version": "0.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/guida-lang/vscode-client"
