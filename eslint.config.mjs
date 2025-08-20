@@ -7,6 +7,7 @@ export default tseslint.config(
     ignores: [
       '**/.vscode-test',
       '**/out',
+      'esbuild.js',
     ]
   },
   js.configs.recommended,
