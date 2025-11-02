@@ -87,7 +87,7 @@ const documents = new TextDocuments(TextDocument);
 
 let hasConfigurationCapability = false;
 let hasWorkspaceFolderCapability = false;
-let hasDiagnosticRelatedInformationCapability = false;
+// let hasDiagnosticRelatedInformationCapability = false;
 
 connection.onInitialize((params: InitializeParams) => {
     const capabilities = params.capabilities;
@@ -100,11 +100,11 @@ connection.onInitialize((params: InitializeParams) => {
     hasWorkspaceFolderCapability = !!(
         capabilities.workspace && !!capabilities.workspace.workspaceFolders
     );
-    hasDiagnosticRelatedInformationCapability = !!(
-        capabilities.textDocument &&
-        capabilities.textDocument.publishDiagnostics &&
-        capabilities.textDocument.publishDiagnostics.relatedInformation
-    );
+    // hasDiagnosticRelatedInformationCapability = !!(
+    //     capabilities.textDocument &&
+    //     capabilities.textDocument.publishDiagnostics &&
+    //     capabilities.textDocument.publishDiagnostics.relatedInformation
+    // );
 
     const result: InitializeResult = {
         capabilities: {
@@ -267,7 +267,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
                     source: 'guida'
                 };
             });
-        });
+        }).slice(0, settings.maxNumberOfProblems);;
     } else {
         return [];
     }
