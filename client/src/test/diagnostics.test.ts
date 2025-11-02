@@ -3,13 +3,30 @@ import * as assert from 'assert';
 import { getDocUri, activate } from './helper';
 
 suite('Should get diagnostics', () => {
-	const docUri = getDocUri('Diagnostics.guida');
+	const docUri = getDocUri('src/Diagnostics.guida');
 
-	test('Diagnoses uppercase texts', async () => {
+	test('Diagnoses missing implementation', async () => {
 		await testDiagnostics(docUri, [
-			{ message: 'ANY is all uppercase.', range: toRange(0, 0, 0, 3), severity: vscode.DiagnosticSeverity.Warning, source: 'ex' },
-			{ message: 'ANY is all uppercase.', range: toRange(0, 14, 0, 17), severity: vscode.DiagnosticSeverity.Warning, source: 'ex' },
-			{ message: 'OS is all uppercase.', range: toRange(0, 18, 0, 20), severity: vscode.DiagnosticSeverity.Warning, source: 'ex' }
+			{
+				message: 'I am trying to parse a declaration, but I am getting stuck here:\n' +
+					'\n' +
+					'3| missingImplementation =\n' +
+					'   ^\n' +
+					'When a line has no spaces at the beginning, I expect it to be a declaration like\n' +
+					'one of these:\n' +
+					'\n' +
+					'    greet : String -> String\n' +
+					'    greet name =\n' +
+					'      "Hello " ++ name ++ "!"\n' +
+					'    \n' +
+					'    type User = Anonymous | LoggedIn String\n' +
+					'\n' +
+					'Try to make your declaration look like one of those? Or if this is not supposed\n' +
+					'to be a declaration, try adding some spaces before it?',
+				range: toRange(2, 0, 2, 0),
+				severity: vscode.DiagnosticSeverity.Error,
+				source: 'guida'
+			}
 		]);
 	});
 });
@@ -24,6 +41,7 @@ async function testDiagnostics(docUri: vscode.Uri, expectedDiagnostics: vscode.D
 	await activate(docUri);
 
 	const actualDiagnostics = vscode.languages.getDiagnostics(docUri);
+	console.log('Actual diagnostics: ', actualDiagnostics[0].range);
 
 	assert.equal(actualDiagnostics.length, expectedDiagnostics.length);
 

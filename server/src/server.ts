@@ -15,11 +15,68 @@ import {
     type DocumentDiagnosticReport
 } from 'vscode-languageserver/node';
 
-import {
-    TextDocument
-} from 'vscode-languageserver-textdocument';
+import { TextDocument } from 'vscode-languageserver-textdocument';
+import { URI } from 'vscode-uri';
 
+// @ts-expect-error missing type
+import { XMLHttpRequest } from 'xmlhttprequest';
+
+import * as fs from "node:fs";
+import * as path from "node:path";
+import * as os from "node:os";
 import * as guida from "guida";
+
+const config = (textDocument: TextDocument): guida.GuidaConfig => {
+    return {
+        XMLHttpRequest,
+        env: {
+            GUIDA_REGISTRY: "https://guida-package-registry.fly.dev"
+        },
+        writeFile: async (path: string, data: string) => {
+            fs.writeFileSync(path, data);
+        },
+        readFile: async (path: string) => {
+            const uri = URI.file(path);
+            const document = documents.get(uri.toString());
+
+            if (document) {
+                return document.getText();
+            }
+
+            return await fs.readFileSync(path);
+        },
+        details: (path: string) => {
+            const stats = fs.statSync(path);
+
+            return Promise.resolve({
+                type: stats.isFile() ? "file" : "directory",
+                createdAt: Math.trunc(stats.birthtimeMs)
+            });
+        },
+        createDirectory: (path: string) => {
+            return new Promise((resolve, _reject) => {
+                fs.mkdir(path, (_err) => {
+                    resolve();
+                });
+            });
+        },
+        readDirectory: (path: string) => {
+            return new Promise((resolve, _reject) => {
+                fs.readdir(path, { recursive: false }, (err, files) => {
+                    if (err) { throw err; }
+                    resolve({ files });
+                });
+            });
+        },
+        getCurrentDirectory: () => {
+            const uri: URI = URI.parse(textDocument.uri);
+            return Promise.resolve(path.dirname(uri.fsPath));
+        },
+        homedir: () => {
+            return Promise.resolve(os.homedir());
+        }
+    };
+};
 
 // Create a connection for the server, using Node's IPC as a transport.
 // Also include all preview / proposed LSP features.
@@ -134,7 +191,6 @@ documents.onDidClose(e => {
     documentSettings.delete(e.document.uri);
 });
 
-
 connection.languages.diagnostics.on(async (params) => {
     const document = documents.get(params.textDocument.uri);
     if (document !== undefined) {
@@ -164,43 +220,57 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 
     // The validator creates diagnostics for all uppercase words length 2 and more
     const text = textDocument.getText();
-    const pattern = /\b[A-Z]{2,}\b/g;
-    let m: RegExpExecArray | null;
 
-    let problems = 0;
-    const diagnostics: Diagnostic[] = [];
-    while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-        problems++;
-        const diagnostic: Diagnostic = {
-            severity: DiagnosticSeverity.Warning,
+    // If the document is empty, skip parsing and return no diagnostics
+    if (!text) { return []; }
+
+    const uri: URI = URI.parse(textDocument.uri);
+
+    const options = uri.scheme === "file" ? { path: uri.fsPath } : { content: text };
+
+    const result: guida.DiagnosticsResult = await guida.diagnostics(config(textDocument), options);
+
+    if (!result) {
+        return [];
+    } else if (result.type === "content-error") {
+        return [{
+            severity: DiagnosticSeverity.Error,
             range: {
-                start: textDocument.positionAt(m.index),
-                end: textDocument.positionAt(m.index + m[0].length)
-            },
-            message: `${m[0]} is all uppercase.`,
-            source: 'ex'
-        };
-        if (hasDiagnosticRelatedInformationCapability) {
-            diagnostic.relatedInformation = [
-                {
-                    location: {
-                        uri: textDocument.uri,
-                        range: Object.assign({}, diagnostic.range)
-                    },
-                    message: 'Spelling matters'
+                start: {
+                    line: result.error.region.start.line - 1,
+                    character: result.error.region.start.column - 1
                 },
-                {
-                    location: {
-                        uri: textDocument.uri,
-                        range: Object.assign({}, diagnostic.range)
-                    },
-                    message: 'Particularly for names'
+                end: {
+                    line: result.error.region.end.line - 1,
+                    character: result.error.region.end.column - 1
                 }
-            ];
-        }
-        diagnostics.push(diagnostic);
+            },
+            message: result.error.message.map((m) => { return typeof m === "string" ? m : m.string; }).join(""),
+            source: 'guida'
+        }];
+    } else if (result.type === "compile-errors") {
+        return result.errors.flatMap((err) => {
+            return err.problems.map((problem) => {
+                return {
+                    severity: DiagnosticSeverity.Error,
+                    range: {
+                        start: {
+                            line: problem.region.start.line - 1,
+                            character: problem.region.start.column - 1
+                        },
+                        end: {
+                            line: problem.region.end.line - 1,
+                            character: problem.region.end.column - 1
+                        }
+                    },
+                    message: problem.message.map((m) => { return typeof m === "string" ? m : m.string; }).join(""),
+                    source: 'guida'
+                };
+            });
+        });
+    } else {
+        return [];
     }
-    return diagnostics;
 }
 
 connection.onDidChangeWatchedFiles(_change => {
@@ -216,14 +286,79 @@ connection.onCompletion(
         // info and always provide the same completion items.
         return [
             {
-                label: 'TypeScript',
-                kind: CompletionItemKind.Text,
+                label: 'if',
+                kind: CompletionItemKind.Keyword,
                 data: 1
             },
             {
-                label: 'JavaScript',
-                kind: CompletionItemKind.Text,
+                label: 'then',
+                kind: CompletionItemKind.Keyword,
                 data: 2
+            },
+            {
+                label: 'then',
+                kind: CompletionItemKind.Keyword,
+                data: 3
+            },
+            {
+                label: 'else',
+                kind: CompletionItemKind.Keyword,
+                data: 4
+            },
+            {
+                label: 'case',
+                kind: CompletionItemKind.Keyword,
+                data: 5
+            },
+            {
+                label: 'of',
+                kind: CompletionItemKind.Keyword,
+                data: 6
+            },
+            {
+                label: 'let',
+                kind: CompletionItemKind.Keyword,
+                data: 7
+            },
+            {
+                label: 'in',
+                kind: CompletionItemKind.Keyword,
+                data: 8
+            },
+            {
+                label: 'type',
+                kind: CompletionItemKind.Keyword,
+                data: 9
+            },
+            {
+                label: 'module',
+                kind: CompletionItemKind.Keyword,
+                data: 10
+            },
+            {
+                label: 'where',
+                kind: CompletionItemKind.Keyword,
+                data: 11
+            },
+            {
+                label: 'import',
+                kind: CompletionItemKind.Keyword,
+                data: 12
+            },
+            {
+                label: 'exposing',
+                kind: CompletionItemKind.Keyword,
+                data: 13
+            },
+            {
+                label: 'as',
+                kind: CompletionItemKind.Keyword,
+                data: 14
+            },
+            {
+                label: 'port',
+                kind: CompletionItemKind.Keyword,
+                data: 15
             }
         ];
     }
@@ -234,11 +369,11 @@ connection.onCompletion(
 connection.onCompletionResolve(
     (item: CompletionItem): CompletionItem => {
         if (item.data === 1) {
-            item.detail = 'TypeScript details';
-            item.documentation = 'TypeScript documentation';
+            item.detail = 'if keyword';
+            item.documentation = 'If statement documentation';
         } else if (item.data === 2) {
-            item.detail = 'JavaScript details';
-            item.documentation = 'JavaScript documentation';
+            item.detail = 'then keyword';
+            item.documentation = 'Then statement documentation';
         }
         return item;
     }
@@ -256,8 +391,7 @@ connection.onDocumentFormatting(async (params) => {
 
     const text = document.getText();
 
-    const app = await guida.init();
-    const result = await app.format(text);
+    const result = await guida.format(config(document), text);
 
     if (result.output) {
         return [

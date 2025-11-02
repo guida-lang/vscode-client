@@ -1,6 +1,7 @@
 out
 node_modules
 client/server
+client/testFixture/guida-stuff
 .vscode-test
 *.tsbuildinfo
 *.vsix

@@ -100,6 +100,8 @@
     "typescript-eslint": "^8.32.1"
   },
   "dependencies": {
-    "guida": "github:guida-lang/compiler#0cf1644b0d7aa7ad17cf000bec4586a6a781eab7"
+    "guida": "github:guida-lang/compiler#8af68e3c4124f52a60ceb4b66193cc5b46962562",
+    "vscode-uri": "^3.1.0",
+    "xmlhttprequest": "^1.8.0"
   }
 }
