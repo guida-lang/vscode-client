@@ -12,7 +12,12 @@ import {
     TextDocumentSyncKind,
     InitializeResult,
     DocumentDiagnosticReportKind,
-    type DocumentDiagnosticReport
+    type DocumentDiagnosticReport,
+    DefinitionParams,
+    Definition,
+    Location,
+    DocumentFormattingParams,
+    Range
 } from 'vscode-languageserver/node';
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -29,9 +34,7 @@ import * as guida from "guida";
 const config = (textDocument: TextDocument): guida.GuidaConfig => {
     return {
         XMLHttpRequest,
-        env: {
-            GUIDA_REGISTRY: "https://guida-package-registry.fly.dev"
-        },
+        env: {},
         writeFile: async (path: string, data: string) => {
             fs.writeFileSync(path, data);
         },
@@ -117,6 +120,7 @@ connection.onInitialize((params: InitializeParams) => {
                 interFileDependencies: false,
                 workspaceDiagnostics: false
             },
+            definitionProvider: true,
             documentFormattingProvider: true
         }
     };
@@ -379,7 +383,30 @@ connection.onCompletionResolve(
     }
 );
 
-connection.onDocumentFormatting(async (params) => {
+// Language Features
+
+connection.onDefinition(async (params: DefinitionParams): Promise<Definition | null> => {
+    // Get the document
+    const document = documents.get(params.textDocument.uri);
+
+    if (!document) {
+        return null;
+    }
+
+    const result = await guida.getDefinitionLocation(config(document), {
+        uri: params.textDocument.uri,
+        position: params.position
+    });
+
+    if (!result) {
+        return null;
+    }
+
+    return Location.create(params.textDocument.uri, Range.create(result.start, result.end));
+}
+);
+
+connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
     const { textDocument } = params;
 
     // Get document text from document manager
