@@ -16,39 +16,27 @@ import {
     DefinitionParams,
     Definition,
     Location,
-    DocumentFormattingParams,
-    Range
+    DocumentFormattingParams
 } from 'vscode-languageserver/node';
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 
-// @ts-expect-error missing type
-import { XMLHttpRequest } from 'xmlhttprequest';
-
 import * as fs from "node:fs";
-import * as path from "node:path";
+
 import * as os from "node:os";
 import * as guida from "guida";
 
-const config = (textDocument: TextDocument): guida.GuidaConfig => {
+const config = (): guida.GuidaConfig => {
     return {
-        XMLHttpRequest,
         env: {},
-        writeFile: async (path: string, data: string) => {
+        writeFile: async (path, data) => {
             fs.writeFileSync(path, data);
         },
-        readFile: async (path: string) => {
-            const uri = URI.file(path);
-            const document = documents.get(uri.toString());
-
-            if (document) {
-                return document.getText();
-            }
-
+        readFile: async (path) => {
             return await fs.readFileSync(path);
         },
-        details: (path: string) => {
+        details: (path) => {
             const stats = fs.statSync(path);
 
             return Promise.resolve({
@@ -56,14 +44,14 @@ const config = (textDocument: TextDocument): guida.GuidaConfig => {
                 createdAt: Math.trunc(stats.birthtimeMs)
             });
         },
-        createDirectory: (path: string) => {
+        createDirectory: (path) => {
             return new Promise((resolve, _reject) => {
                 fs.mkdir(path, (_err) => {
                     resolve();
                 });
             });
         },
-        readDirectory: (path: string) => {
+        readDirectory: (path) => {
             return new Promise((resolve, _reject) => {
                 fs.readdir(path, { recursive: false }, (err, files) => {
                     if (err) { throw err; }
@@ -72,8 +60,7 @@ const config = (textDocument: TextDocument): guida.GuidaConfig => {
             });
         },
         getCurrentDirectory: () => {
-            const uri: URI = URI.parse(textDocument.uri);
-            return Promise.resolve(path.dirname(uri.fsPath));
+            return Promise.resolve(process.cwd());
         },
         homedir: () => {
             return Promise.resolve(os.homedir());
@@ -232,7 +219,8 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 
     const options = uri.scheme === "file" ? { path: uri.fsPath } : { content: text };
 
-    const result: guida.DiagnosticsResult = await guida.diagnostics(config(textDocument), options);
+    const result: guida.DiagnosticsResult = await guida.diagnostics(config(), options);
+    // return [];
 
     if (!result) {
         return [];
@@ -393,8 +381,9 @@ connection.onDefinition(async (params: DefinitionParams): Promise<Definition | n
         return null;
     }
 
-    const result = await guida.getDefinitionLocation(config(document), {
-        uri: params.textDocument.uri,
+    const uri: URI = URI.parse(params.textDocument.uri);
+    const result = await guida.getDefinitionLocation(config(), {
+        path: uri.fsPath,
         position: params.position
     });
 
@@ -402,9 +391,8 @@ connection.onDefinition(async (params: DefinitionParams): Promise<Definition | n
         return null;
     }
 
-    return Location.create(params.textDocument.uri, Range.create(result.start, result.end));
-}
-);
+    return Location.create(URI.file(result.path).toString(), result.range);
+});
 
 connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
     const { textDocument } = params;
@@ -418,7 +406,7 @@ connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
 
     const text = document.getText();
 
-    const result = await guida.format(config(document), text);
+    const result = await guida.format(config(), text);
 
     if (result.output) {
         return [
