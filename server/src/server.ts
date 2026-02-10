@@ -31,10 +31,20 @@ const config = (): guida.GuidaConfig => {
     return {
         env: {},
         writeFile: async (path, data) => {
-            fs.writeFileSync(path, data);
+            return new Promise((resolve, _reject) => {
+                fs.writeFile(path, data, (err) => {
+                    if (err) { throw err; }
+                    resolve();
+                });
+            });
         },
         readFile: async (path) => {
-            return await fs.readFileSync(path);
+            return new Promise((resolve, _reject) => {
+                fs.readFile(path, (err, data) => {
+                    if (err) { throw err; }
+                    resolve(data);
+                });
+            });
         },
         details: (path) => {
             const stats = fs.statSync(path);
@@ -220,7 +230,6 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
     const options = uri.scheme === "file" ? { path: uri.fsPath } : { content: text };
 
     const result: guida.DiagnosticsResult = await guida.diagnostics(config(), options);
-    // return [];
 
     if (!result) {
         return [];
