@@ -40,6 +40,13 @@ const config = (): guida.GuidaConfig => {
         },
         readFile: async (path) => {
             return new Promise((resolve, _reject) => {
+                const uri = URI.file(path);
+                const document = documents.get(uri.toString());
+
+                if (document) {
+                    return resolve(document.getText());
+                }
+
                 fs.readFile(path, (err, data) => {
                     if (err) { throw err; }
                     resolve(data);
