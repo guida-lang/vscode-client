@@ -125,6 +125,7 @@ connection.onInitialize((params: InitializeParams) => {
                 workspaceDiagnostics: false
             },
             definitionProvider: true,
+            referencesProvider: true,
             documentFormattingProvider: true
         }
     };
@@ -408,6 +409,27 @@ connection.onDefinition(async (params: DefinitionParams): Promise<Definition | n
     }
 
     return Location.create(URI.file(result.path).toString(), result.range);
+});
+
+connection.onReferences(async (params: DefinitionParams): Promise<Location[] | null> => {
+    // Get the document
+    const document = documents.get(params.textDocument.uri);
+
+    if (!document) {
+        return null;
+    }
+
+    const uri: URI = URI.parse(params.textDocument.uri);
+    const result = await guida.findReferences(config(), {
+        path: uri.fsPath,
+        position: params.position
+    });
+
+    if (!result) {
+        return null;
+    }
+
+    return result.map((location) => Location.create(URI.file(location.path).toString(), location.range));
 });
 
 connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
