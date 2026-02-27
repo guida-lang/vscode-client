@@ -16,7 +16,8 @@ import {
     DefinitionParams,
     Definition,
     Location,
-    DocumentFormattingParams
+    DocumentFormattingParams,
+    Hover
 } from 'vscode-languageserver/node';
 
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -126,7 +127,8 @@ connection.onInitialize((params: InitializeParams) => {
             },
             definitionProvider: true,
             referencesProvider: true,
-            documentFormattingProvider: true
+            documentFormattingProvider: true,
+            hoverProvider: true
         }
     };
 
@@ -459,6 +461,32 @@ connection.onDocumentFormatting(async (params: DocumentFormattingParams) => {
     } else {
         throw new Error("Formatting failed: " + result.error);
     }
+});
+
+connection.onHover(async (params: TextDocumentPositionParams): Promise<Hover | null> => {
+    const document = documents.get(params.textDocument.uri);
+
+    if (!document) {
+        return null;
+    }
+
+    const uri: URI = URI.parse(params.textDocument.uri);
+    const result = await guida.getHoverInformation(config(), {
+        path: uri.fsPath,
+        position: params.position
+    });
+
+    if (!result) {
+        return null;
+    }
+
+    return {
+        contents: {
+            kind: 'markdown',
+            value: result.documentation
+        },
+        range: result.range
+    };
 });
 
 // Make the text document manager listen on the connection
