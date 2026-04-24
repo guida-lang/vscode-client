@@ -101,6 +101,7 @@
   },
   "dependencies": {
     "guida": "file:../compiler",
+    "os-lock": "^2.0.0",
     "vscode-uri": "^3.1.0"
   }
 }

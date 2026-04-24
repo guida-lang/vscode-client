@@ -37,7 +37,7 @@ async function main() {
         sourcesContent: false,
         platform: 'node',
         outdir: '.',
-        external: ['vscode'],
+        external: ['vscode', 'os-lock'],
         logLevel: 'warning',
         plugins: [
             /* add to the end of plugins array */

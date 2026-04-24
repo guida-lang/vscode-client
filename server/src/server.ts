@@ -24,9 +24,9 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { URI } from 'vscode-uri';
 
 import * as fs from "node:fs";
-
 import * as os from "node:os";
 import * as guida from "guida";
+import { lock, unlock } from "os-lock";
 
 const config = (): guida.GuidaConfig => {
     return {
@@ -82,6 +82,24 @@ const config = (): guida.GuidaConfig => {
         },
         homedir: () => {
             return Promise.resolve(os.homedir());
+        },
+        lockFile: async (path: string) => {
+            return new Promise((resolve, _reject) => {
+                fs.open(path, 'a+', async (err, fd) => {
+                    if (err) { throw err; }
+                    await lock(fd, { exclusive: true });
+                    resolve();
+                });
+            });
+        },
+        unlockFile: async (path: string) => {
+            return new Promise((resolve, _reject) => {
+                fs.open(path, async (err, fd) => {
+                    if (err) { throw err; }
+                    await unlock(fd);
+                    resolve();
+                });
+            });
         }
     };
 };
