@@ -261,6 +261,28 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 
     if (!result) {
         return [];
+    } else if (result.type === "warnings") {
+        return result.warnings.filter((warning) => {
+            return warning.path === options.path;
+        }).flatMap((warning) => {
+            return warning.warnings.map((problem) => {
+                return {
+                    severity: DiagnosticSeverity.Warning,
+                    range: {
+                        start: {
+                            line: problem.region.start.line - 1,
+                            character: problem.region.start.column - 1
+                        },
+                        end: {
+                            line: problem.region.end.line - 1,
+                            character: problem.region.end.column - 1
+                        }
+                    },
+                    message: problem.message.map((m) => { return typeof m === "string" ? m : m.string; }).join(""),
+                    source: "guida"
+                };
+            });
+        }).slice(0, settings.maxNumberOfProblems);;
     } else if (result.type === "content-error") {
         return [{
             severity: DiagnosticSeverity.Error,
@@ -275,7 +297,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
                 }
             },
             message: result.error.message.map((m) => { return typeof m === "string" ? m : m.string; }).join(""),
-            source: 'guida'
+            source: "guida"
         }];
     } else if (result.type === "compile-errors") {
         return result.errors.flatMap((err) => {
@@ -293,10 +315,10 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
                         }
                     },
                     message: problem.message.map((m) => { return typeof m === "string" ? m : m.string; }).join(""),
-                    source: 'guida'
+                    source: "guida"
                 };
             });
-        }).slice(0, settings.maxNumberOfProblems);;
+        }).slice(0, settings.maxNumberOfProblems);
     } else {
         return [];
     }
@@ -304,7 +326,7 @@ async function validateTextDocument(textDocument: TextDocument): Promise<Diagnos
 
 connection.onDidChangeWatchedFiles(_change => {
     // Monitored files have change in VSCode
-    connection.console.log('We received a file change event');
+    connection.console.log("We received a file change event");
 });
 
 // This handler provides the initial list of the completion items.
@@ -315,77 +337,77 @@ connection.onCompletion(
         // info and always provide the same completion items.
         return [
             {
-                label: 'if',
+                label: "if",
                 kind: CompletionItemKind.Keyword,
                 data: 1
             },
             {
-                label: 'then',
+                label: "then",
                 kind: CompletionItemKind.Keyword,
                 data: 2
             },
             {
-                label: 'then',
+                label: "then",
                 kind: CompletionItemKind.Keyword,
                 data: 3
             },
             {
-                label: 'else',
+                label: "else",
                 kind: CompletionItemKind.Keyword,
                 data: 4
             },
             {
-                label: 'case',
+                label: "case",
                 kind: CompletionItemKind.Keyword,
                 data: 5
             },
             {
-                label: 'of',
+                label: "of",
                 kind: CompletionItemKind.Keyword,
                 data: 6
             },
             {
-                label: 'let',
+                label: "let",
                 kind: CompletionItemKind.Keyword,
                 data: 7
             },
             {
-                label: 'in',
+                label: "in",
                 kind: CompletionItemKind.Keyword,
                 data: 8
             },
             {
-                label: 'type',
+                label: "type",
                 kind: CompletionItemKind.Keyword,
                 data: 9
             },
             {
-                label: 'module',
+                label: "module",
                 kind: CompletionItemKind.Keyword,
                 data: 10
             },
             {
-                label: 'where',
+                label: "where",
                 kind: CompletionItemKind.Keyword,
                 data: 11
             },
             {
-                label: 'import',
+                label: "import",
                 kind: CompletionItemKind.Keyword,
                 data: 12
             },
             {
-                label: 'exposing',
+                label: "exposing",
                 kind: CompletionItemKind.Keyword,
                 data: 13
             },
             {
-                label: 'as',
+                label: "as",
                 kind: CompletionItemKind.Keyword,
                 data: 14
             },
             {
-                label: 'port',
+                label: "port",
                 kind: CompletionItemKind.Keyword,
                 data: 15
             }
@@ -500,7 +522,7 @@ connection.onHover(async (params: TextDocumentPositionParams): Promise<Hover | n
 
     return {
         contents: {
-            kind: 'markdown',
+            kind: "markdown",
             value: result.documentation
         },
         range: result.range
